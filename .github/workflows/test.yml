@@ -1,0 +1,14 @@
+name: Waveshare 35H package tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s tests -v
+      - run: sh -n target/sbc/radxa_dragon_q6a/bridge-probe/probe.sh
+      - run: sudo apt-get update && sudo apt-get install -y device-tree-compiler
+      - run: dtc -@ -I dts -O dtb -o "$RUNNER_TEMP/q6a-waveshare-35h.dtbo" target/sbc/radxa_dragon_q6a/q6a-waveshare-35h.dts
+        name: Compile the Q6A display overlay
